@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Runnin' Game - ryancnap</title>
+	<script src="./lib/phaser.min.js"></script>
+	<style type="text/css">
+		body {
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+
+	<script type="text/javascript">
+		// //cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js
+		var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+
+		function preload() {
+			//TODO: Following two lines commented out to load tilemaps properly.
+			//TODO: game.load.image('sky', 'assets/sky_bg-nr.jpg');
+			//TODO: game.load.image('ground', 'assets/platform.png');
+
+			// Load Tiled tiledmap .json export and both tilesets used to make the .tmx file.
+			game.load.tilemap('startlevel', 'phaser_tilemaps/startlevel.json', null, Phaser.Tilemap.TILED_JSON);
+			game.load.image('ts-mountain', 'phaser_tilemaps/ts-mountain.png');
+			game.load.image('sky_bg-nr', 'phaser_tilemaps/sky_bg-nr.jpg');
+
+			// Use Phaser's spritesheet to load a horizontal sprite sheet.
+			// takes name key, relative filepath,  x, y pixel value and number of animation frames.
+			game.load.spritesheet('myguy', 'assets/mage_transparency.png', 39.5, 34, 8);
+
+		}
+
+		// Declare variables for map and map layers.
+		//TODO: var platforms;
+		var map;
+		var bg_layer;
+		var collision_layer;
+		var fg_layer;
+
+		function create() {
+			// Going to use builtin arcade physics system -- cool.
+			game.physics.startSystem(Phaser.Physics.ARCADE);
+
+			//TODO: game.add.sprite(0, 0, 'sky');
+
+			//TODO: platforms = game.add.group();
+
+			//Enable physics.
+			//TODO: platforms.enableBody = true;
+
+			//Create ground and scale it to fit width of game.
+			//TODO: var ground = platforms.create(0, game.world.height - 64, 'ground');
+			//TODO: ground.scale.setTo(2, 2);
+
+			//Stop ground from falling away when you jump on it
+			//TODO: ground.body.immovable = true;
+
+			//Create two ledges
+			//TODO: var ledge = platforms.create(400, 400, 'ground');
+			//TODO: ledge.body.immovable = true;
+
+			//TODO: ledge = platforms.create(-150, 250, 'ground');
+			//TODO: ledge.body.immovable = true;
+
+
+			// Attempt Tiled tilemap load.
+			map = game.add.tilemap('startlevel');
+			map.addTilesetImage('sky_bg-nr', 'sky_bg-nr');
+			map.addTilesetImage('ts-mountain', 'ts-mountain');
+
+			bg_layer = map.createLayer('background');
+			fg_layer = map.createLayer('foreground');
+			collision_layer = map.createLayer('collision');
+
+			//bg_layer.resizeWorld();
+			//fg_layer.resizeWorld();
+
+			// Create player.
+			player = game.add.sprite(32, game.world.height - 150, 'myguy');
+
+			// Enable physics on player.
+			game.physics.arcade.enable(player);
+
+			// Physics properties for the player; make him bounce.
+			player.body.bounce.y = 0.4;
+			player.body.gravity.y = 800;
+			player.body.collideWorldBounds = true;
+
+			// Two animations; walking left and right.
+			// Takes key name, list of indexed frames in spritesheet, boolean for looping image.
+			player.animations.add('forward', [0, 1], 15, true);
+			player.animations.add('left', [2, 3], 15, true);
+			player.animations.add('right', [4, 5], 15, true);
+			player.animations.add('idle', [0], 0, false);
+
+			// Set default to make our player do something.
+			player.animations.play('idle', 0, false);
+
+			// Create cursors object for listening to keyboard input.
+			cursors = game.input.keyboard.createCursorKeys();
+
+
+		}
+
+
+		function update() {
+			//TODO: game.physics.arcade.collide(player, platforms);
+
+			// Reset the player's velocity.
+			player.body.velocity.x = 0;
+
+			// Control player movements based on down, left right.
+			// If you press down, the character appears to fly, which is inherited from me
+			// defining gravity as if to play a sidescroller, but telling the key to move the
+			// player up.
+			if (cursors.left.isDown)
+			{
+				player.body.velocity.x = -300;
+				player.animations.play('left', 30, true);
+			}
+			else if (cursors.right.isDown)
+			{
+				player.body.velocity.x = 300;
+				player.animations.play('right', 30, true);
+			}
+			else if (cursors.up.isDown)
+			{
+				player.body.velocity.y = 300;
+				player.animations.play('forward', 30, true);
+			}
+			else if (cursors.down.isDown)
+			{
+				player.body.velocity.y = -300;
+				player.animations.play('down', 30, true);
+			}
+			else
+			{
+				// Stand still.
+				player.animations.play('idle', 0, false);
+
+			}
+
+		}
+	</script>
+
+</body>
+</html>
